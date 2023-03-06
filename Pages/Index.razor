@@ -1,0 +1,62 @@
+﻿@page "/"
+@using System.Threading;
+
+<style>
+    .button {
+        border: none;
+        color: white;
+        padding: 16px 32px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16px;
+        margin: 4px 2px;
+        transition-duration: 0.4s;
+        cursor: pointer;
+    }
+
+    .start {
+        background-color: white;
+        color: black;
+        border: 2px solid #4CAF50;
+    }
+
+    .stop {
+        background-color: #4CAF50;
+        color: white;
+    }
+</style>
+<div style="display: flex; flex-flow: column; justify-content: space-between; height: 750px;">
+
+    <h1 style="text-align: center; padding-top: 300px;">@TimerDisplay</h1>
+
+    <button @onclick="@StopWatchToggle" class="button @(IsRunning ? "stop" : "start")">
+        @(IsRunning ? "Stop" : "Start")
+    </button>
+</div>
+
+@code{
+    public string TimerDisplay { get; set; } = "00:00:00.000";
+    public DateTime StartTime { get; set; }
+    public bool IsRunning { get; set; } = false;
+    Timer timer;
+
+    public void StopWatchToggle() {
+        IsRunning = !IsRunning;
+        if (IsRunning)
+        {
+            StartTime = DateTime.Now;
+            timer = new Timer(new TimerCallback(_ =>
+            {
+                TimerDisplay = (DateTime.Now - StartTime).ToString(@"hh\:mm\:ss\.fff");
+                InvokeAsync(() =>
+                {
+                    StateHasChanged();
+                });
+            }), null, TimeSpan.FromMilliseconds(1), TimeSpan.FromMilliseconds(1));
+        }
+        else {
+            timer.Dispose();
+        }
+    }
+}

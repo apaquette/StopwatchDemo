@@ -1,0 +1,62 @@
+﻿@page "/camera"
+
+<style>
+    .button {
+        border: none;
+        color: white;
+        padding: 16px 32px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16px;
+        margin: 4px 2px;
+        transition-duration: 0.4s;
+        cursor: pointer;
+    }
+
+    .start {
+        background-color: white;
+        color: black;
+        border: 2px solid #4CAF50;
+    }
+</style>
+
+<h1>Camera</h1>
+
+<button @onclick="@RecordVideo" class="button start">Take Photo</button>
+<button @onclick="@GetVideo" class="button start">Get Photo</button>
+@if (SelectedImage is not null) {
+    <img src=@SelectedImage style="width:auto;" />
+}
+
+@code{
+    public string? MediaFilePath { get; set; } = null;
+    public ImageSource SelectedImage { get; set; } = null;
+
+    public async void RecordVideo() {
+        if (MediaPicker.Default.IsCaptureSupported) {
+            FileResult media = await MediaPicker.Default.CapturePhotoAsync();
+            if (media != null) {
+                string localFilePath = Path.Combine(FileSystem.CacheDirectory, media.FileName);
+                using Stream sourceStream = await media.OpenReadAsync();
+                using FileStream localFileStream = File.OpenWrite(localFilePath);
+                await sourceStream.CopyToAsync(localFileStream);
+            }
+        }
+    }
+
+    public async void GetVideo() {
+        if (MediaPicker.Default.IsCaptureSupported) {
+            FileResult media = await MediaPicker.Default.PickPhotoAsync();
+            if (media != null) {
+                SelectedImage = media.FullPath;
+                //NOT SURE HOW TO MAKE THIS WORK//
+                /*string localFilePath = media.FullPath;
+                using Stream sourceStream = await media.OpenReadAsync();
+                SelectedImage = ImageSource.FromStream(() => sourceStream);
+                Console.WriteLine($"SelectedImage: {SelectedImage.ToString()}");*/
+                StateHasChanged();
+            }
+        }
+    }
+}
