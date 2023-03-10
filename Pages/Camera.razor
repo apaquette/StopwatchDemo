@@ -28,7 +28,7 @@
 @*<button @onclick="@SaveData" class="button start">Click</button>*@
 <button @onclick="@LoadData" class="button start">Show Photo</button>
 <button @onclick="@SaveData" class="button start">Text File Test</button>
-<img src="@MediaFilePath" style="width:500px;height:600px;" />
+<img src="@MediaFilePath" style="width: auto;" />
 <p style="word-wrap: break-word;">@content</p>
 
 @code{
@@ -71,6 +71,7 @@
         StreamWriter sw = File.CreateText(fileName);
         sw.WriteLine("Alex test");
         sw.Close();
+
         StreamReader sr = File.OpenText(fileName);
         string text = sr.ReadToEnd();
         sr.Close();
