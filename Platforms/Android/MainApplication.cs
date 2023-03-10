@@ -1,6 +1,7 @@
 ﻿using Android.App;
 using Android.Runtime;
 
+
 // Needed for Picking photo/video
 [assembly: UsesPermission(Android.Manifest.Permission.ReadExternalStorage)]
 

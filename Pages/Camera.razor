@@ -24,52 +24,83 @@
 <h1>Camera</h1>
 
 <button @onclick="@RecordVideo" class="button start">Take Photo</button>
-<button @onclick="@GetVideo" class="button start">Get Photo</button>
-<img src=@MediaFilePath style="width:auto;" />
+@*<button @onclick="@GetVideo" class="button start">Get Photo</button>*@
+@*<button @onclick="@SaveData" class="button start">Click</button>*@
+<button @onclick="@LoadData" class="button start">Show Photo</button>
+<button @onclick="@SaveData" class="button start">Text File Test</button>
+<img src="@MediaFilePath" style="width:500px;height:600px;" />
+<p style="word-wrap: break-word;">@content</p>
 
 @code{
     public string MediaFilePath { get; set; } = null;
-    public ImageSource SelectedImage { get; set; } = null;
+    public string content;
 
-    public async void RecordVideo() {
-        if (MediaPicker.Default.IsCaptureSupported) 
+    public void LoadData()
+    {
+        //string fileName = Path.Combine(FileSystem.AppDataDirectory, "testFile.txt");
+        //StreamReader sr = File.OpenText(MediaFilePath);
+        //string text = sr.ReadToEnd();
+        //sr.Close();
+        //content = text;
+        if (File.Exists(MediaFilePath))
+        {
+            Console.WriteLine("File path valid");
+        }
+        StateHasChanged();
+    }
+
+    public async void RecordVideo()
+    {
+        if (MediaPicker.Default.IsCaptureSupported)
         {
             FileResult media = await MediaPicker.Default.CapturePhotoAsync();
-            if (media != null) 
+            if (media != null)
             {
-                string localFilePath = Path.Combine(FileSystem.CacheDirectory, media.FileName);
+                string localFilePath = Path.Combine(FileSystem.AppDataDirectory, media.FileName);
                 using Stream sourceStream = await media.OpenReadAsync();
                 using FileStream localFileStream = File.OpenWrite(localFilePath);
                 await sourceStream.CopyToAsync(localFileStream);
+                MediaFilePath = localFilePath;
             }
         }
     }
 
-    public async void GetVideo() {
-        /*Image image = new Image
-            {
-            Source = ImageSource.FromFile("image.png")
-        };*/
-        FileResult media = await MediaPicker.Default.PickPhotoAsync();
-        MediaFilePath = media.FullPath;
-        Console.WriteLine(media.FullPath);
+    public void SaveData()
+    {
+        string fileName = Path.Combine(FileSystem.AppDataDirectory, "testFile.txt");
+        StreamWriter sw = File.CreateText(fileName);
+        sw.WriteLine("Alex test");
+        sw.Close();
+        StreamReader sr = File.OpenText(fileName);
+        string text = sr.ReadToEnd();
+        sr.Close();
+        content = text;
         StateHasChanged();
-        /*if (MediaPicker.Default.IsCaptureSupported) {
-            FileResult media = await MediaPicker.Default.PickPhotoAsync();
-            FileResult file = await FilePicker.Default.PickAsync();
-            if (file != null)
-            {
-                //SelectedImage = media.FullPath;
-                //MediaFilePath = file.FullPath;
-                //Console.WriteLine(MediaFilePath);
-                //NOT SURE HOW TO MAKE THIS WORK//
-                string localFilePath = file.FullPath;
-                using Stream sourceStream = await file.OpenReadAsync();
-                SelectedImage = ImageSource.FromStream(() => sourceStream);
-                
-                Console.WriteLine($"SelectedImage: {SelectedImage}");
-                StateHasChanged();
-            }
-        }*/
     }
+
+    //public async void GetVideo() {
+    //    FileResult media = await MediaPicker.Default.PickPhotoAsync();
+    //    if(media is not null) {
+    //        MediaFilePath = media.FullPath;
+    //        Console.WriteLine(media.FullPath);
+    //        StateHasChanged();
+    //    }
+    //        /*if (MediaPicker.Default.IsCaptureSupported) {
+    //        FileResult media = await MediaPicker.Default.PickPhotoAsync();
+    //        FileResult file = await FilePicker.Default.PickAsync();
+    //            if (file != null)
+    //            {
+    //            //SelectedImage = media.FullPath;
+    //            //MediaFilePath = file.FullPath;
+    //            //Console.WriteLine(MediaFilePath);
+    //            //NOT SURE HOW TO MAKE THIS WORK//
+    //            string localFilePath = file.FullPath;
+    //            using Stream sourceStream = await file.OpenReadAsync();
+    //            SelectedImage = ImageSource.FromStream(() => sourceStream);
+
+    //            Console.WriteLine($"SelectedImage: {SelectedImage}");
+    //            StateHasChanged();
+    //    }
+    //    }*/
+    //}
 }

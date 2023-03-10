@@ -50,7 +50,16 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="VideoRecordings\" />
+      <AndroidResource Remove="VideoRecordings\**" />
+      <Compile Remove="VideoRecordings\**" />
+      <Content Remove="VideoRecordings\**" />
+      <EmbeddedResource Remove="VideoRecordings\**" />
+      <MauiXaml Remove="VideoRecordings\**" />
+      <None Remove="VideoRecordings\**" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="wwwroot\Test\" />
     </ItemGroup>
 
 </Project>
